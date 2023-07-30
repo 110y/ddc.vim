@@ -59,20 +59,20 @@ export function main(denops: Denops) {
       return Promise.resolve();
     },
     setContextGlobal(arg1: unknown): Promise<void> {
-      const id = ensure(arg1, is.String);
-      contextBuilder.setContextGlobal(id);
+      const callback = ensure(arg1, is.String);
+      contextBuilder.setContextGlobal(callback);
       return Promise.resolve();
     },
     setContextFiletype(arg1: unknown, arg2: unknown): Promise<void> {
-      const id = ensure(arg1, is.String);
+      const callback = ensure(arg1, is.String);
       const filetype = ensure(arg2, is.String);
-      contextBuilder.setContextFiletype(id, filetype);
+      contextBuilder.setContextFiletype(callback, filetype);
       return Promise.resolve();
     },
     setContextBuffer(arg1: unknown, arg2: unknown): Promise<void> {
-      const id = ensure(arg1, is.String);
+      const callback = ensure(arg1, is.String);
       const bufnr = ensure(arg2, is.Number);
-      contextBuilder.setContextBuffer(id, bufnr);
+      contextBuilder.setContextBuffer(callback, bufnr);
       return Promise.resolve();
     },
     patchGlobal(arg1: unknown): Promise<void> {
@@ -110,7 +110,11 @@ export function main(denops: Denops) {
     async loadConfig(arg1: unknown): Promise<void> {
       await lock.lock(async () => {
         const path = ensure(arg1, is.String);
-        const mod = await import(toFileUrl(path).href);
+        // NOTE: Import module with fragment so that reload works properly.
+        // https://github.com/vim-denops/denops.vim/issues/227
+        const mod = await import(
+          `${toFileUrl(path).href}#${performance.now()}`
+        );
         const obj = new mod.Config();
         await obj.config({ denops, contextBuilder, setAlias });
       });

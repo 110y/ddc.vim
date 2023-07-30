@@ -37,9 +37,9 @@ function ddc#enable_cmdline_completion() abort
 
   augroup ddc-cmdline
     autocmd!
-    autocmd CmdlineLeave <buffer> call ddc#hide('CmdlineLeave')
-    autocmd CmdlineEnter <buffer> call ddc#on_event('CmdlineEnter')
-    autocmd CmdlineChanged <buffer>
+    autocmd CmdlineLeave * call ddc#hide('CmdlineLeave')
+    autocmd CmdlineEnter * call ddc#on_event('CmdlineEnter')
+    autocmd CmdlineChanged *
           \ : if getcmdtype() !=# '=' && getcmdtype() !=# '@'
           \ |   call ddc#on_event('CmdlineChanged')
           \ | endif
@@ -73,7 +73,7 @@ function ddc#disable() abort
   augroup ddc
     autocmd!
   augroup END
-  call ddc#disable_cmdline_completion()
+  call s:disable_cmdline_completion()
 endfunction
 
 function ddc#on_complete_done(completed_item) abort
